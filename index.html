@@ -1,237 +1,182 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#13131a">
-<title>SYAL-BOT | Web Edition</title>
-<style>
-:root{--bg:#13131a;--panel:#1c1c24;--panel2:#24242e;--line:#333341;--text:#f9f9fb;--muted:#a2a2b4;--teal:#10a37f;--gold:#f5c542;--danger:#ff7777}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.app{display:flex;min-height:100vh}
-.sidebar{width:270px;background:#101016;border-right:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px;flex-shrink:0}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:.2px}
-.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--teal),#116c9a);display:grid;place-items:center;font-size:21px}
-.sub{color:var(--muted);font-size:12px}
-.newchat,.sidebtn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 12px;border-radius:12px;text-align:left}
-.newchat{border-color:#276b5b}
-.newchat:hover,.sidebtn:hover{background:var(--panel2)}
-.sidehead{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:1px;margin-top:6px}
-.history{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:40vh}
-.histitem{border:0;background:transparent;color:#d7d7e0;text-align:left;padding:9px;border-radius:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.histitem.active,.histitem:hover{background:var(--panel2)}
-.sidebottom{margin-top:auto;display:grid;gap:8px}
-.main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:100vh}
-.topbar{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:10px}
-.top-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.levelpill{font-size:12px;color:var(--gold);border:1px solid #6a5a22;background:#292416;padding:5px 9px;border-radius:999px;white-space:nowrap}
-.content{width:min(850px,100%);margin:0 auto;padding:24px 18px 150px;flex:1}
-.welcome{text-align:center;padding:40px 10px 25px}
-.welcome .biglogo{font-size:44px}
-h1{font-size:clamp(25px,5vw,36px);margin:8px 0 5px;letter-spacing:-.7px}
-.accent{color:var(--teal)}
-.welcome p{color:var(--muted);margin:0 auto;max-width:490px}
-.notice{margin:14px auto 0;max-width:610px;background:#201f19;border:1px solid #5d5126;color:#e9dca8;padding:10px 12px;border-radius:12px;font-size:12px;text-align:left}
-.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px auto 25px;max-width:650px}
-.suggestion{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:13px;text-align:left;border-radius:13px}
-.suggestion strong{display:block;margin-bottom:3px}
-.suggestion span{font-size:12px;color:var(--muted)}
-.messages{display:flex;flex-direction:column;gap:18px}
-.message{display:flex;gap:10px;align-items:flex-start}
-.avatar{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;background:var(--panel2)}
-.message.user .avatar{background:#174b40}
-.bubble{min-width:0;max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
-.who{font-size:12px;color:var(--muted);margin-bottom:4px}
-.bubble p{margin:0}
-.composer-wrap{position:fixed;bottom:0;left:270px;right:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(19,19,26,0),var(--bg) 22%)}
-.composer{width:min(850px,100%);margin:0 auto;background:var(--panel);border:1px solid #454554;border-radius:18px;padding:10px;display:flex;align-items:flex-end;gap:8px}
-textarea{background:transparent;color:var(--text);border:0;outline:0;resize:none;flex:1;min-height:42px;max-height:130px;padding:10px;line-height:1.4}
-.send{border:0;background:var(--teal);color:white;border-radius:12px;width:43px;height:43px;font-size:19px;font-weight:800}
-.send:disabled{opacity:.4;cursor:default}
-.composer-note{text-align:center;color:var(--muted);font-size:11px;margin-top:7px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:var(--panel);border:1px solid var(--line);padding:10px;border-radius:12px}
-.stat strong{display:block;font-size:20px;color:var(--gold)}
-.stat span{color:var(--muted);font-size:11px}
-.mobile-menu{display:none}
-.modal-backdrop{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
-.modal-backdrop.open{display:flex}
-.modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;width:min(430px,100%);max-height:85vh;overflow:auto}
-.modal h2{margin-top:0}
-.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.modal-actions button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 12px;border-radius:10px}
-.progress{height:7px;background:#30303b;border-radius:99px;overflow:hidden;margin:8px 0 14px}
-.progress span{height:100%;display:block;background:var(--teal);width:0}
-.task{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
-.task input{margin-top:5px;accent-color:var(--teal)}
-@media(max-width:700px){
- .app{display:block}.sidebar{position:fixed;z-index:5;top:0;bottom:0;left:0;width:min(290px,85vw);transform:translateX(-105%);transition:transform .2s;box-shadow:10px 0 30px #0005}
- .sidebar.open{transform:translateX(0)}.topbar{padding:0 13px;height:58px}.mobile-menu{display:inline-block;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 10px}
- .composer-wrap{left:0;padding-left:10px;padding-right:10px}.content{padding:14px 13px 145px}.welcome{padding:26px 5px 16px}.suggestions{gap:8px}.suggestion{padding:11px}.stats{gap:6px}
-}
-@media(max-width:380px){.suggestions{grid-template-columns:1fr}.levelpill{font-size:11px}.top-title{font-size:14px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindo | Web Edition</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #343541; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
+        aside { width: 260px; background-color: #202123; padding: 10px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+        .sidebar-header { font-weight: bold; padding: 10px; text-align: center; border-bottom: 1px solid #4e4f60; font-size: 18px; color: #fff; }
+        .nav-btn { background: transparent; border: 1px solid #4e4f60; color: #fff; padding: 12px; border-radius: 5px; cursor: pointer; text-align: left; font-size: 14px; width: 100%; transition: 0.2s; }
+        .nav-btn:hover, .nav-btn.active { background-color: #2a2b32; }
+        .history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        .history-list button { background: transparent; border: none; color: #ececf1; padding: 10px; text-align: left; border-radius: 5px; cursor: pointer; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .history-list button:hover { background-color: #2a2b32; }
+        .history-list button.active { background-color: #343541; }
+        .stats-area { background: #2a2b32; padding: 10px; border-radius: 5px; font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+        main { flex: 1; display: flex; flex-direction: column; background-color: #343541; position: relative; }
+        .chat-header { padding: 15px; border-bottom: 1px solid #2a2b32; background: #343541; font-weight: bold; text-align: center; }
+        .messages-container { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; }
+        .message { padding: 20px; display: flex; gap: 20px; line-height: 1.6; word-break: break-word; }
+        .message.user { background-color: #343541; }
+        .message.bot { background-color: #444654; }
+        .avatar { width: 30px; height: 30px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+        .message.user .avatar { background: #5436da; }
+        .message.bot .avatar { background: #10a37f; }
+        .text { flex: 1; font-size: 15px; white-space: pre-wrap; }
+        .input-area { padding: 20px; background: linear-gradient(180deg, rgba(52,53,65,0), #343541 20px); }
+        .input-container { max-width: 768px; margin: 0 auto; position: relative; display: flex; background: #40414f; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 1px solid #303139; }
+        input { flex: 1; background: transparent; border: none; padding: 15px; color: #fff; font-size: 15px; outline: none; }
+        .send-btn { background: transparent; border: none; color: #acacbe; padding: 0 15px; cursor: pointer; font-size: 18px; }
+        .send-btn:hover { color: #fff; }
+        .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; padding: 20px; }
+        .welcome-screen h1 { font-size: 32px; margin-bottom: 10px; color: #fff; }
+        .welcome-screen p { color: #c5c5d2; font-size: 16px; }
+        .menu-toggle { display: none; background: #202123; border: none; color: #fff; padding: 10px; font-size: 20px; cursor: pointer; text-align: left; }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { position: absolute; left: -260px; top: 44px; bottom: 0; transition: 0.3s; }
+            aside.open { left: 0; }
+            .menu-toggle { display: block; }
+        }
+
+        /* Modal Stil Dosyaları */
+        .modal-backdrop { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-backdrop.open { display: flex; }
+        .modal { background: #2d2d30; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; border: 1px solid #4e4f60; }
+        .modal h3 { margin-bottom: 15px; color: #fff; }
+        .task { background: #1e1e1f; padding: 10px; border-radius: 5px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 2px; }
+        .task small { color: #aaa; }
+        .close-modal-btn { background: #e74c3c; border:none; color:#fff; padding:8px; width:100%; border-radius:5px; margin-top:10px; cursor:pointer; font-weight:bold; }
+    </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="logo">☁️</div><div>SYAL-BOT <div class="sub">WEB EDITION</div></div></div>
-    <button class="newchat" id="newChat">＋ Yeni sohbet</button>
-    <div class="sidehead">Sohbet geçmişi</div>
-    <div class="history" id="history"></div>
-    <div class="sidebottom">
-      <div class="sidehead">İlerleme</div>
-      <div class="stats">
-        <div class="stat"><strong id="xpStat">0</strong><span>XP</span></div>
-        <div class="stat"><strong id="levelStat">1</strong><span>Seviye</span></div>
-        <div class="stat"><strong id="chatStat">0</strong><span>Sohbet</span></div>
-      </div>
-      <button class="sidebtn" id="tasksBtn">🏆 Görevler ve başarımlar</button>
-      <button class="sidebtn" id="exportBtn">⇩ Verilerimi dışa aktar</button>
-      <button class="sidebtn" id="clearBtn">⌫ Yerel verileri sil</button>
-     <!-- Mindo API Ayar Kutusu -->
-<div class="api-settings" style="padding: 15px; margin: 15px 0; background: #202123; border-radius: 8px; border: 1px solid #4e4f60; text-align: left;">
-    <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px; font-family: sans-serif; margin-top: 0;">⚙️ Mindo API Ayarları</h4>
-    <input type="password" id="apiKeyInput" placeholder="Hugging Face Tokenınızı Yapıştırın" style="width: 100%; padding: 10px; box-sizing: border-box; border-radius: 5px; border: 1px solid #4e4f60; background: #343541; color: #fff; margin-bottom: 8px;">
-    <button id="saveKeyBtn" style="width: 100%; padding: 10px; background: #10a37f; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Anahtarı Kaydet</button>
-</div>
 
+    <button class="menu-toggle" id="menuBtn">☰ Menü</button>
+
+    <aside id="sidebar">
+        <div class="sidebar-header">Mindo</div>
+        <button class="nav-btn" id="newChat">+ Yeni Sohbet</button>
+        
+        <div class="history-list" id="history"></div>
+
+        <div class="stats-area">
+            <div><strong>XP Puanı:</strong> <span id="xpStat">0</span></div>
+            <div><strong>Seviye:</strong> <span id="levelStat">1</span></div>
+            <div><strong>Sohbetler:</strong> <span id="chatStat">0</span></div>
+        </div>
+
+        <button class="nav-btn" id="tasksBtn">🏆 Görevler & Başarımlar</button>
+        <button class="nav-btn" id="exportBtn">💾 Verileri Dışa Aktar</button>
+        <button class="nav-btn" id="clearBtn" style="color: #ff4d4d; border-color: #ff4d4d;">🗑️ Verileri Temizle</button>
+
+        <!-- API AYAR ALANI -->
+        <div style="background: #2a2b32; padding: 10px; border-radius: 5px; margin-top: 5px; border: 1px solid #4e4f60;">
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #fff;">⚙️ Mindo API Ayarı</div>
+            <input type="password" id="apiKeyInput" placeholder="Hugging Face Token" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #4e4f60; background: #343541; color: #fff; font-size: 12px; margin-bottom: 5px;">
+            <button id="saveKeyBtn" style="width: 100%; padding: 6px; background: #10a37f; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer;">Kaydet</button>
+        </div>
+    </aside>
+
+    <main>
+        <div class="chat-header" id="chatTitle">Mindo | Web Edition</div>
+        
+        <div class="welcome-screen" id="welcome">
+            <h1>Merhaba, ben Mindo!</h1>
+            <p>Meta Llama 3 altyapısıyla güçlendirilmiş gerçek bir yapay zekayım. Sol taraftaki ayarlardan Hugging Face tokenınızı girerek benimle konuşmaya başlayabilirsiniz.</p>
+        </div>
+
+        <div class="messages-container" id="messages"></div>
+
+        <div class="input-area">
+            <form class="input-container" id="composer">
+                <input type="text" id="input" placeholder="Mindo'ya bir şeyler yazın..." autocomplete="off">
+                <button type="submit" class="send-btn">➔</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- GÖREVLER MODAL PENCERESİ -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+            <h3>🏆 Görevler ve Başarımlar</h3>
+            <div id="taskContent"></div>
+            <button class="close-modal-btn" id="closeModal">Kapat</button>
+        </div>
     </div>
-  </aside>
-  <main class="main">
-    <header class="topbar">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0">
-        <button class="mobile-menu" id="menuBtn" aria-label="Menüyü aç">☰</button>
-        <div class="top-title" id="chatTitle">Yeni sohbet</div>
-      </div>
-      <div class="levelpill">⚡ Seviye <span id="levelTop">1</span></div>
-    </header>
-    <section class="content">
-      <div id="welcome" class="welcome">
-        <div class="biglogo">☁️</div>
-        <h1>Merhaba, <span class="accent">ben SYAL-BOT.</span></h1>
-        <p>Fikirlerini yaz, birlikte geliştirelim. Bu ilk sürümde sohbet kayıtları cihazında saklanır.</p>
-        <div class="notice">ℹ️ İlk sürüm notu: Arayüz, sohbet geçmişi ve XP çalışır. Henüz gerçek bir büyük dil modeli bağlı değil; cevaplar temel yerel kurallarla oluşturulur. Ücretli API kullanılmaz.</div>
-      </div>
-      <div class="suggestions" id="suggestions">
-        <button class="suggestion" data-prompt="Bana SYAL-BOT için yeni özellik fikirleri ver."><strong>💡 Fikir üret</strong><span>Yeni özellikler bulalım</span></button>
-        <button class="suggestion" data-prompt="HTML, CSS ve JavaScript arasındaki farkı basitçe anlat."><strong>💻 Kod öğren</strong><span>Web geliştirmeyi öğren</span></button>
-        <button class="suggestion" data-prompt="Bugün yapabileceğim 3 küçük görev öner."><strong>🎯 Görev planla</strong><span>Adım adım ilerle</span></button>
-        <button class="suggestion" data-prompt="Bana kısa ve eğlenceli bir bilmece sor."><strong>🧩 Biraz eğlen</strong><span>Bilmece zamanı</span></button>
-      </div>
-      <div class="messages" id="messages"></div>
-    </section>
-    <div class="composer-wrap">
-      <form class="composer" id="composer">
-        <textarea id="input" rows="1" placeholder="SYAL-BOT'a mesaj yaz..." aria-label="Mesaj yaz"></textarea>
-        <button class="send" id="send" aria-label="Mesajı gönder">↑</button>
-      </form>
-      <div class="composer-note">SYAL-BOT • Ücretsiz başlangıç sürümü • Veriler bu tarayıcıda saklanır</div>
-    </div>
-  </main>
-</div>
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <h2 id="modalTitle">Görevler ve başarımlar</h2>
-    <div id="taskContent"></div>
-    <div class="modal-actions"><button id="closeModal">Kapat</button></div>
-  </div>
-</div>
+
 <script>
 (() => {
-const $ = id => document.getElementById(id);
-const STORAGE_KEY = "syalbot_web_v1";
-let state = loadState();
-let currentId = state.currentId;
-const tasks = [
-  {id:"first", title:"İlk mesajını gönder", desc:"SYAL-BOT ile ilk sohbetini yap.", xp:10},
-  {id:"three", title:"Sohbet ustası", desc:"Bir sohbette 3 mesaj gönder.", xp:20},
-  {id:"five", title:"Düzenli kullanıcı", desc:"Toplam 5 mesaj gönder.", xp:30},
-  {id:"idea", title:"Fikir makinesi", desc:"SYAL-BOT için bir fikir yaz.", xp:15}
-];
-function loadState(){
- try {
-  const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if(s && Array.isArray(s.chats)) return {...s, xp:Number(s.xp)||0, completed:s.completed||[], chats:s.chats};
- } catch(e){}
- return {chats:[],currentId:null,xp:0,completed:[],totalMessages:0};
-}
-function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){alert("Tarayıcı depolama alanı dolu olabilir. Verilerini dışa aktarmayı dene.");}}
-function uid(){return "c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function level(){return Math.floor(state.xp/100)+1}
-function currentChat(){return state.chats.find(c=>c.id===currentId)}
-function makeChat(){const c={id:uid(),title:"Yeni sohbet",messages:[],created:Date.now()};state.chats.unshift(c);currentId=c.id;state.currentId=currentId;save();render();$("input").focus();}
-function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function addMessage(role,text){const c=currentChat();if(!c)return;c.messages.push({role,text,at:Date.now()});if(c.messages.filter(m=>m.role==="user").length===1)c.title=text.slice(0,34)+(text.length>34?"…":"");save();render();}
-function complete(id){if(state.completed.includes(id))return;state.completed.push(id);const t=tasks.find(t=>t.id===id);if(t)state.xp+=t.xp;save();}
-function checkTasks(userText){
- const c=currentChat();const userCount=state.chats.reduce((n,ch)=>n+ch.messages.filter(m=>m.role==="user").length,0);
- if(userCount>=1)complete("first");if(c&&c.messages.filter(m=>m.role==="user").length>=3)complete("three");if(userCount>=5)complete("five");
- if(/syal|özellik|fikir|ekle|geliştir/i.test(userText))complete("idea");
-}
-function replyFor(text){
- const t=text.toLocaleLowerCase("tr-TR");
- if(/^(selam|merhaba|hey|sa\b|selamlar)/i.test(t))return "Selam! ☁️ Ben SYAL-BOT'un ilk web sürümüyüm. Ne üzerinde çalışalım?";
- if(t.includes("syal-bot")||t.includes("syalbot"))return "SYAL-BOT'u birlikte geliştirelim! ⚡ İlk sürümde sohbet geçmişi, yerel kayıtlar ve XP sistemi var. Sonraki adımda ücretsiz, tarayıcı içinde çalışan bir dil modeli eklemeyi deneyebiliriz.";
- if(t.includes("html")||t.includes("css")||t.includes("javascript"))return "Kısaca şöyle:\n\n• HTML sayfanın yapısını kurar.\n• CSS görünümünü ve düzenini belirler.\n• JavaScript düğmelere ve etkileşimlere işlev kazandırır.\n\nBu web sürümü de bu üç teknolojiyi kullanıyor. 💻";
- if(t.includes("görev"))return "Mini görevlerin:\n1. SYAL-BOT'un görünümünde bir geliştirme fikri bul.\n2. Bir sohbet başlat.\n3. İstersen verilerini dışa aktararak yedekle.\n\nGörevler ve başarımlar bölümünden XP ilerlemeni görebilirsin. 🎯";
- if(t.includes("bilmece"))return "Bilmece zamanı! 🧩\n\nDili var ama konuşamaz; yatağı var ama uyuyamaz. Nedir?\n\nCevabını yaz, bakalım!";
- if(t.includes("fikir")||t.includes("özellik"))return "Güzel! 💡 Şu özelliklerden birini geliştirebiliriz:\n\n1. Gerçek yerel yapay zekâ modeli\n2. Sohbet arama ve sabitleme\n3. Kişisel notlar/hafıza alanı\n4. Günlük görevler ve başarımlar\n5. Tema seçimi ve dışa aktarma\n\nHangisiyle başlayalım?";
- if(t.includes("kim")&&t.includes("sensin"))return "Ben SYAL-BOT'un geliştirme aşamasındaki web sürümüyüm. Şu anda gerçek bir dil modeli değil, temel kurallarla çalışan bir prototipim. 🤖";
- if(t.includes("teşekkür"))return "Rica ederim! ☁️ SYAL-BOT'u adım adım geliştirmeye devam edebiliriz.";
- if(t.includes("nasılsın"))return "Çalışmaya hazırım! ⚡ Sen nasılsın? Bugün SYAL-BOT'ta ne geliştirelim?";
- if(t.includes("yardım"))return "Buradayım! Şunlarda başlayabiliriz: web kodlarını öğrenmek, SYAL-BOT'a özellik fikri bulmak, görev planlamak veya basit bir bilmece çözmek. Not: Bu sürümde cevaplar temel kurallara dayanıyor.";
- return "Mesajını aldım! ☁️\n\nBu ilk sürümde henüz gerçek bir yapay zekâ modeli bağlı olmadığı için her soruya akıllıca cevap veremiyorum. Ama sohbet arayüzü, geçmiş ve XP sistemi çalışıyor.\n\nBir sonraki geliştirme adımı olarak ücretsiz yerel model bağlantısı ekleyebiliriz. İstersen ne yapmak istediğini biraz daha açık yaz.";
-}
-function sendText(text){
- text=text.trim();if(!text)return;
- if(!currentChat())makeChat();
- addMessage("user",text);state.totalMessages=(state.totalMessages||0)+1;checkTasks(text);
- state.xp+=5;
- const answer=replyFor(text);
- addMessage("bot",answer);save();render();
- $("input").focus();
-}
-function render(){
- const c=currentChat();$("chatTitle").textContent=c?c.title:"Yeni sohbet";
- $("messages").innerHTML="";
- $("welcome").style.display=c&&c.messages.length?"none":"block";
- $("suggestions").style.display=c&&c.messages.length?"none":"grid";
- if(c)c.messages.forEach(m=>{
-  const el=document.createElement("div");el.className="message "+(m.role==="user"?"user":"bot");
-  const avatar=m.role==="user"?"🙂":"☁️";const who=m.role==="user"?"Sen":"SYAL-BOT";
-  el.innerHTML='<div class="avatar">'+avatar+'</div><div class="bubble"><div class="who">'+who+'</div><p>'+escapeHTML(m.text)+'</p></div>';
-  $("messages").appendChild(el);
- });
- $("history").innerHTML="";
- state.chats.forEach(ch=>{
-  const b=document.createElement("button");b.className="histitem"+(ch.id===currentId?" active":"");b.textContent="▢ "+ch.title;b.title=ch.title;
-  b.onclick=()=>{currentId=ch.id;state.currentId=currentId;save();render();$("sidebar").classList.remove("open");};$("history").appendChild(b);
- });
- $("xpStat").textContent=state.xp;$("levelStat").textContent=level();$("levelTop").textContent=level();$("chatStat").textContent=state.chats.length;
-}
-function showTasks(){
- const completed=state.completed||[];const next=state.xp%100;
- $("taskContent").innerHTML='<p>Toplam XP: <b>'+state.xp+'</b> • Seviye <b>'+level()+'</b></p><div class="progress"><span style="width:'+next+'%"></span></div><p class="sub">'+next+'/100 XP — sonraki seviyeye</p>'+
- tasks.map(t=>'<div class="task"><span>'+(completed.includes(t.id)?"✅":"🔒")+'</span><div><b>'+escapeHTML(t.title)+'</b><div class="sub">'+escapeHTML(t.desc)+'</div><div class="sub">Ödül: '+t.xp+' XP</div></div></div>').join("");
- $("modalBackdrop").classList.add("open");
-}
-$("composer").addEventListener("submit",e=>{e.preventDefault();sendText($("input").value);$("input").value="";$("input").style.height="auto";});
-$("input").addEventListener("input",()=>{const el=$("input");el.style.height="auto";el.style.height=Math.min(el.scrollHeight,130)+"px";});
-$("input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit();}});
-$("newChat").onclick=makeChat;
-$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
-$("tasksBtn").onclick=showTasks;
-$("closeModal").onclick=()=>$("modalBackdrop").classList.remove("open");
-$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))$("modalBackdrop").classList.remove("open");});
-document.querySelectorAll("[data-prompt]").forEach(b=>b.onclick=()=>sendText(b.dataset.prompt));
-$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="syalbot-yedek.json";a.click();URL.revokeObjectURL(url);};
-$("clearBtn").onclick=()=>{if(confirm("Bu tarayıcıdaki SYAL-BOT sohbetlerini ve XP verilerini silmek istiyor musun? Önce dışa aktararak yedekleyebilirsin.")){localStorage.removeItem(STORAGE_KEY);state={chats:[],currentId:null,xp:0,completed:[],totalMessages:0};currentId=null;render();}};
-if(!currentChat()&&state.chats.length===0){makeChat();}else{if(!currentChat())currentId=state.chats[0]?.id||null;state.currentId=currentId;render();}
-})();
-</script>
-</body>
-  </html>
+    const getEl = id => document.getElementById(id);
+    const STORAGE_KEY = "mindo_storage_v1";
+    let state = loadState();
+    let currentId = state.currentId;
+
+    const tasks = [
+        {id:"first", title:"İlk Sohbet", desc:"Mindo'ya ilk mesajınızı gönderin."},
+        {id:"three", title:"Sohbet Ustası", desc:"Bir sohbet içinde en az 3 mesaj yazın."},
+        {id:"five", title:"Sıkı Kullanıcı", desc:"Toplamda 5 adet mesaj sınırına ulaşın."},
+        {id:"idea", title:"Girişimci", desc:"Mesajınızda 'proje', 'fikir' veya 'yazılım' kelimelerini geçirin."}
+    ];
+
+    function loadState(){
+        try {
+            const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if(s && Array.isArray(s.chats)) return s;
+        } catch(e){}
+        return {chats:[], currentId:null, xp:0, completed:[], totalMessages:0};
+    }
+
+    function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+    function uid(){ return "c" + Date.now().toString(36); }
+    function level(){ return Math.floor(state.xp / 50) + 1; }
+    function currentChat(){ return state.chats.find(c => c.id === currentId); }
+    
+    function makeChat(){
+        const c = {id: uid(), title: "Yeni Sohbet", messages: []};
+        state.chats.push(c);
+        currentId = c.id;
+        state.currentId = c.id;
+        save(); render();
+        return c;
+    }
+
+    function escapeHTML(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    
+    function addMessage(role, text){
+        const c = currentChat() || makeChat();
+        c.messages.push({role, text});
+        save(); render();
+    }
+
+    function complete(id){
+        if(state.completed.includes(id)) return;
+        state.completed.push(id);
+        state.xp += 20;
+        save(); render();
+    }
+    
+    function checkTasks(userText){
+        const c = currentChat();
+        if(state.totalMessages >= 1) complete("first");
+        if(c && c.messages.length >= 6) complete("three"); // 3 kullanıcı + 3 bot mesajı
+        if(state.totalMessages >= 5) complete("five");
+        if(/(proje|fikir|yazılım|geliştir)/i.test(userText)) complete("idea");
+    }
+
+    async function sendText(text){
+        text = text.trim(); if(!text) return;
+        if(!currentChat()) makeChat();
+        
+        addMessage("user", text);
+        state.totalMessages++;
+        state.xp += 5;
+        save(); render();
+        getEl("input").focus();
+        checkTasks(text);
+
+        const HF_TOKEN = localStorage.getItem("user_api_key");
+        if (!HF_TOKEN) {
