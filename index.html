@@ -36,12 +36,13 @@
         .welcome-screen p { color: #c5c5d2; font-size: 16px; }
         .menu-toggle { display: none; background: #202123; border: none; color: #fff; padding: 10px; font-size: 20px; cursor: pointer; text-align: left; }
         
-        @media (max-width: 768px) {
+                @media (max-width: 768px) {
             body { flex-direction: column; }
-            aside { position: absolute; left: -260px; top: 44px; bottom: 0; transition: 0.3s; }
+            aside { position: fixed; left: -260px; top: 44px; bottom: 0; transition: 0.3s; width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
             aside.open { left: 0; }
-            .menu-toggle { display: block; }
-        }
+            .menu-toggle { display: block; width: 100%; position: sticky; top: 0; z-index: 20; background: #202123; border-bottom: 1px solid #2a2b32; }
+            main { margin-top: 0; height: calc(100vh - 44px); }
+                }
 
         /* Modal Stil Dosyaları */
         .modal-backdrop { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
