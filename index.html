@@ -5,40 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mindo | Web Edition</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #343541; color: #ececf1; display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
-        .api-container { background: #202123; padding: 10px; width: 100%; border-bottom: 1px solid #4e4f60; z-index: 999; }
+        
+        /* En Üst API Alanı */
+        .api-container { background: #202123; padding: 8px; width: 100%; border-bottom: 1px solid #4e4f60; z-index: 999; }
         .api-box { max-width: 600px; margin: 0 auto; display: flex; gap: 8px; }
-        .api-box input { flex: 1; background: #343541; border: 1px solid #4e4f60; border-radius: 6px; padding: 10px; color: #fff; font-size: 14px; outline: none; }
-        .api-box button { background: #10a37f; color: #fff; border: none; border-radius: 6px; padding: 10px 15px; font-size: 14px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .messages-container { flex: 1; overflow-y: auto; padding: 10px 0; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; }
+        .api-box input { flex: 1; background: #343541; border: 1px solid #4e4f60; border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; }
+        .api-box button { background: #10a37f; color: #fff; border: none; border-radius: 6px; padding: 8px 15px; font-size: 13px; font-weight: bold; cursor: pointer; }
+
+        /* Üst İstatistik ve Görev Barı (Mobilde Sıkışmayan Tasarım) */
+        .stats-bar { background: #2a2b32; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; border-bottom: 1px solid #2a2b32; }
+        .stats-info { display: flex; gap: 15px; font-weight: 500; }
+        .stats-info span { color: #10a37f; font-weight: bold; }
+        .task-trigger-btn { background: #5436da; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+        /* Mesaj Alanı */
+        .messages-container { flex: 1; overflow-y: auto; padding: 15px 0; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; }
         .message { padding: 15px; display: flex; gap: 12px; line-height: 1.5; word-break: break-word; font-size: 15px; }
         .message.user { background-color: #343541; }
         .message.bot { background-color: #444654; }
         .avatar { font-size: 18px; flex-shrink: 0; }
         .text { flex: 1; white-space: pre-wrap; }
+
+        /* Alt Mesaj Yazma Alanı */
         .input-area { padding: 10px; background: #343541; width: 100%; border-top: 1px solid #2a2b32; }
         .input-container { max-width: 600px; margin: 0 auto; display: flex; background: #40414f; border-radius: 8px; border: 1px solid #303139; }
         .input-container input { flex: 1; background: transparent; border: none; padding: 14px; color: #fff; font-size: 15px; outline: none; }
         .send-btn { background: transparent; border: none; color: #acacbe; padding: 0 15px; cursor: pointer; font-size: 18px; }
+
+        /* Modal / Başarımlar Penceresi */
+        .modal-backdrop { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-backdrop.open { display: flex; }
+        .modal { background: #2d2d30; padding: 20px; border-radius: 8px; width: 90%; max-width: 380px; border: 1px solid #4e4f60; }
+        .modal h3 { margin-bottom: 12px; color: #fff; font-size: 16px; }
+        .task { background: #1e1e1f; padding: 10px; border-radius: 5px; margin-bottom: 6px; display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+        .task small { color: #aaa; }
+        .close-modal-btn { background: #e74c3c; border:none; color:#fff; padding:8px; width:100%; border-radius:5px; margin-top:10px; cursor:pointer; font-weight:bold; font-size: 13px; }
     </style>
 </head>
 <body>
 
+    <!-- ÜSTTEKİ API ANAHTARI GİRİŞİ -->
     <div class="api-container">
         <div class="api-box">
-            <input type="password" id="apiKeyInputMobile" placeholder="Hugging Face Tokenı Buraya Yapıştırın">
+            <input type="password" id="apiKeyInputMobile" placeholder="Hugging Face Tokenı Yapıştırın">
             <button id="saveKeyBtnMobile">Kaydet</button>
         </div>
     </div>
 
+    <!-- MOBİL İSTATİSTİK VE GÖREV BARIDIR -->
+    <div class="stats-bar">
+        <div class="stats-info">
+            <div>💡 Seviye: <span id="levelStat">1</span></div>
+            <div>✨ XP: <span id="xpStat">0</span></div>
+        </div>
+        <button class="task-trigger-btn" id="tasksBtn">🏆 Görevler & Başarımlar</button>
+    </div>
+
+    <!-- SOHBET MESAJLARI -->
     <div class="messages-container" id="messages">
         <div class="message bot">
             <div class="avatar">🤖</div>
-            <div class="text">Merhaba, ben Mindo! Yukarıdaki kutuya Hugging Face şifreni (Token) yapıştırıp "Kaydet" dedikten sonra aşağıdaki kutudan benimle dilediğin gibi konuşabilirsin!</div>
+            <div class="text">Merhaba, ben Mindo! Harika bir yapay zeka asistanıyım. Yukarıdaki kutuya Hugging Face şifreni yapıştırıp "Kaydet" dedikten sonra benimle konuşabilirsin. Konuştukça XP kazanacak ve görevleri tamamlayacaksın!</div>
         </div>
     </div>
 
+    <!-- ALTTAKİ MESAJ YAZMA ALANI -->
     <div class="input-area">
         <form class="input-container" id="composer">
             <input type="text" id="input" placeholder="Mindo'ya bir şeyler yazın..." autocomplete="off">
@@ -46,12 +79,28 @@
         </form>
     </div>
 
+    <!-- GÖREVLERİM PENCERESİ -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+            <h3>🏆 Görevler ve Başarımlar</h3>
+            <div id="taskContent"></div>
+            <button class="close-modal-btn" id="closeModal">Pencereyi Kapat</button>
+        </div>
+    </div>
+
 <script>
 (() => {
     const getEl = id => document.getElementById(id);
-    const STORAGE_KEY = "mindo_storage_v1";
+    const STORAGE_KEY = "mindo_storage_v2";
     let state = loadState();
     let currentId = state.currentId;
+
+    const tasks = [
+        {id:"first", title:"İlk Tanışma", desc:"Mindo'ya ilk mesajınızı gönderin. (+20 XP)"},
+        {id:"three", title:"Sohbet Ustası", desc:"Mindo ile derin bir sohbete dalın. (+20 XP)"},
+        {id:"five", title:"Düzenli Kullanıcı", desc:"Toplamda 5 mesaj sınırına ulaşın. (+20 XP)"},
+        {id:"idea", title:"Üretken Zihin", desc:"Mesajında 'proje', 'fikir' veya 'yazılım' kelimesini geçir. (+20 XP)"}
+    ];
 
     function loadState(){
         try {
@@ -63,6 +112,7 @@
 
     function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
     function uid(){ return "c" + Date.now().toString(36); }
+    function level(){ return Math.floor(state.xp / 50) + 1; }
     function currentChat(){ return state.chats.find(c => c.id === currentId); }
     
     function makeChat(){
@@ -82,23 +132,41 @@
         save(); render();
     }
 
+    function complete(id){
+        if(state.completed.includes(id)) return;
+        state.completed.push(id);
+        state.xp += 20;
+        save(); render();
+    }
+    
+    function checkTasks(userText){
+        if(state.totalMessages >= 1) complete("first");
+        const c = currentChat();
+        if(c && c.messages.length >= 5) complete("three");
+        if(state.totalMessages >= 5) complete("five");
+        if(/(proje|fikir|yazılım|geliştir|kod)/i.test(userText)) complete("idea");
+    }
+
     async function sendText(text){
         text = text.trim(); if(!text) return;
         if(!currentChat()) makeChat();
         
         addMessage("user", text);
+        state.totalMessages++;
+        state.xp += 5;
         save(); render();
         getEl("input").focus();
+        checkTasks(text);
 
         const HF_TOKEN = localStorage.getItem("user_api_key");
         if (!HF_TOKEN) {
-            addMessage("bot", "Lütfen üstteki kutudan geçerli bir Hugging Face Token girip kaydedin.");
+            addMessage("bot", "Lütfen en üstteki kutudan geçerli bir Hugging Face Token girip kaydedin.");
             return;
         }
 
         addMessage("bot", "Mindo düşünüyor...");
 
-        // Satırı alt alta bölerek sağa taşma sorununu çözdüm:
+        // Satırı alt alta bölerek telefonda yana taşma problemini çözdüm
         const url = "https://huggingface.co" + 
                     "models/Qwen/Qwen2.5-7B-Instruct";
 
@@ -118,12 +186,12 @@
             const sonuc = await yanit.json();
             let botunCevabi = "";
 
-            if (Array.isArray(sonuc) && sonuc[0]?.generated_text) {
-                botunCevabi = sonuc[0].generated_text;
+            if (Array.isArray(sonuc) && sonuc?.generated_text) {
+                botunCevabi = sonuc.generated_text;
             } else if (sonuc.generated_text) {
                 botunCevabi = sonuc.generated_text;
             } else {
-                botunCevabi = "Mindo uykuda. Lütfen birkaç saniye sonra tekrar yazın.";
+                botunCevabi = "Mindo şu an uykuda. Lütfen birkaç saniye sonra tekrar yazın.";
             }
 
             if (botunCevabi.startsWith(text)) {
@@ -139,7 +207,7 @@
         } catch (hata) {
             const chat = currentChat();
             if (chat && chat.messages.length > 0) {
-                chat.messages[chat.messages.length - 1].text = "Bağlantı hatası.";
+                chat.messages[chat.messages.length - 1].text = "Bağlantı hatası oluştu. Lütfen şifrenizi kontrol edin.";
             }
             save(); render();
         }
@@ -152,31 +220,3 @@
         
         c.messages.forEach(m => {
             const el = document.createElement("div");
-            el.className = `message ${m.role}`;
-            const avatar = m.role === "user" ? "👤" : "🤖";
-            el.innerHTML = `<div class="avatar">${avatar}</div><div class="text">${escapeHTML(m.text)}</div>`;
-            getEl("messages").appendChild(el);
-        });
-        getEl("messages").scrollTop = getEl("messages").scrollHeight;
-    }
-
-    getEl("composer").addEventListener("submit", e => { e.preventDefault(); const i = getEl("input"); sendText(i.value); i.value = ""; });
-
-    const savedKey = localStorage.getItem("user_api_key");
-    if (savedKey && getEl("apiKeyInputMobile")) { getEl("apiKeyInputMobile").value = savedKey; }
-
-    getEl("saveKeyBtnMobile").onclick = () => {
-        const enteredKey = getEl("apiKeyInputMobile").value.trim();
-        if (enteredKey) {
-            localStorage.setItem("user_api_key", enteredKey);
-            alert("Şifre kaydedildi! Aşağıdan yazabilirsin.");
-        } else {
-            alert("Lütfen token girin.");
-        }
-    };
-
-    if(currentChat()) render();
-})();
-</script>
-</body>
-</html>
